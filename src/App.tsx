@@ -9,6 +9,7 @@ import RegisterPage from './pages/RegisterPage';
 import CartPage from './pages/CartPage';
 import ShippingPage from './pages/ShippingPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import ProductEditPage from './pages/ProductEditPage';
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
             {/* Protected Routes */}
             <Route path="" element={<ProtectedRoute />}>
               <Route path="/shipping" element={<ShippingPage />} />
+              <Route path="/admin/product/edit" element={<ProductEditPage />} />
               {/* Add other protected routes like /payment and /profile here */}
             </Route>
           </Routes>
