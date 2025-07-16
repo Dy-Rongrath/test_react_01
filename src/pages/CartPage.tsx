@@ -11,8 +11,7 @@ const CartPage = () => {
     const totalPrice = cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0).toFixed(2);
 
     const checkoutHandler = () => {
-        // Later, this will redirect to a shipping/payment page
-        navigate('/login?redirect=/shipping');
+        navigate('/shipping');
     };
 
     return (

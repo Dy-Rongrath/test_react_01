@@ -11,12 +11,22 @@ interface CartItem {
     quantity: number;
 }
 
+// Define the shape of the shipping address
+interface ShippingAddress {
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
+}
+
 // Define the shape of the context's value
 interface CartContextType {
     cartItems: CartItem[];
+    shippingAddress: ShippingAddress | null;
     addToCart: (product: Product, quantity: number) => void;
     updateQuantity: (productId: string, quantity: number) => void;
     removeFromCart: (id: string) => void;
+    saveShippingAddress: (address: ShippingAddress) => void;
 }
 
 // Define the shape of a Product (matching ProductPage)
@@ -52,22 +62,35 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     });
 
+    const [shippingAddress, setShippingAddress] = useState<ShippingAddress | null>(() => {
+        try {
+            const localData = localStorage.getItem('shippingAddress');
+            return localData ? JSON.parse(localData) : null;
+        } catch (error) {
+            return null;
+        }
+    });
+
     useEffect(() => {
         localStorage.setItem('cartItems', JSON.stringify(cartItems));
     }, [cartItems]);
+
+    useEffect(() => {
+        if (shippingAddress) {
+            localStorage.setItem('shippingAddress', JSON.stringify(shippingAddress));
+        }
+    }, [shippingAddress]);
 
     const addToCart = (product: Product, quantity: number) => {
         setCartItems(prevItems => {
             const existingItem = prevItems.find(item => item._id === product._id);
             if (existingItem) {
-                // If item exists, update its quantity
                 return prevItems.map(item =>
                     item._id === product._id
                         ? { ...item, quantity: item.quantity + quantity }
                         : item
                 );
             }
-            // If item is new, add it to the cart
             return [...prevItems, { ...product, quantity: quantity }];
         });
     };
@@ -84,8 +107,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setCartItems(prevItems => prevItems.filter(item => item._id !== id));
     };
 
+    const saveShippingAddress = (address: ShippingAddress) => {
+        setShippingAddress(address);
+    };
+
     return (
-        <CartContext.Provider value={{ cartItems, addToCart, updateQuantity, removeFromCart }}>
+        <CartContext.Provider value={{ cartItems, shippingAddress, addToCart, updateQuantity, removeFromCart, saveShippingAddress }}>
             {children}
         </CartContext.Provider>
     );
