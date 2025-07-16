@@ -2,16 +2,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Navbar, Nav, NavDropdown, Badge } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 
 const Header = () => {
     const navigate = useNavigate();
+    const { auth, logout } = useAuth();
     const { cartItems } = useCart();
-    const userInfoFromStorage = localStorage.getItem('userInfo');
-    const userInfo = userInfoFromStorage ? JSON.parse(userInfoFromStorage) : null;
 
-    const logoutHandler = () => {
-        localStorage.removeItem('userInfo');
+    const logoutHandler = async () => {
+        // You could call an API logout endpoint here if you have one
+        logout();
         navigate('/login');
     };
 
@@ -31,26 +32,20 @@ const Header = () => {
                                 <Nav.Link>
                                     <i className="fas fa-shopping-cart"></i> Cart
                                     {totalItems > 0 && (
-                                        <Badge pill bg="success" style={{ marginLeft: '5px' }}>
-                                            {totalItems}
-                                        </Badge>
+                                        <Badge pill bg="success" style={{ marginLeft: '5px' }}>{totalItems}</Badge>
                                     )}
                                 </Nav.Link>
                             </LinkContainer>
-                            {userInfo ? (
-                                <NavDropdown title={userInfo.name} id="username">
+                            {auth?.user ? (
+                                <NavDropdown title={auth.user.name} id="username">
                                     <LinkContainer to="/profile">
                                         <NavDropdown.Item>Profile</NavDropdown.Item>
                                     </LinkContainer>
-                                    <NavDropdown.Item onClick={logoutHandler}>
-                                        Logout
-                                    </NavDropdown.Item>
+                                    <NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
                                 </NavDropdown>
                             ) : (
                                 <LinkContainer to="/login">
-                                    <Nav.Link>
-                                        <i className="fas fa-user"></i> Sign In
-                                    </Nav.Link>
+                                    <Nav.Link><i className="fas fa-user"></i> Sign In</Nav.Link>
                                 </LinkContainer>
                             )}
                         </Nav>
