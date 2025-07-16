@@ -1,10 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import { Container, Navbar, Nav, NavDropdown, Badge } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import { useCart } from '../context/CartContext';
 
 const Header = () => {
     const navigate = useNavigate();
+    const { cartItems } = useCart();
     const userInfoFromStorage = localStorage.getItem('userInfo');
     const userInfo = userInfoFromStorage ? JSON.parse(userInfoFromStorage) : null;
 
@@ -12,6 +14,8 @@ const Header = () => {
         localStorage.removeItem('userInfo');
         navigate('/login');
     };
+
+    const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
     return (
         <header>
@@ -23,6 +27,16 @@ const Header = () => {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ms-auto">
+                            <LinkContainer to="/cart">
+                                <Nav.Link>
+                                    <i className="fas fa-shopping-cart"></i> Cart
+                                    {totalItems > 0 && (
+                                        <Badge pill bg="success" style={{ marginLeft: '5px' }}>
+                                            {totalItems}
+                                        </Badge>
+                                    )}
+                                </Nav.Link>
+                            </LinkContainer>
                             {userInfo ? (
                                 <NavDropdown title={userInfo.name} id="username">
                                     <LinkContainer to="/profile">
@@ -47,4 +61,4 @@ const Header = () => {
     );
 };
 
-export default Header
+export default Header;

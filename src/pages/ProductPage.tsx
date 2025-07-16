@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Row, Col, Image, ListGroup, Card, Button, Spinner, Alert } from 'react-bootstrap';
+import { Row, Col, Image, ListGroup, Card, Button, Spinner, Alert, Form } from 'react-bootstrap';
+import { useCart } from '../context/CartContext';
 
 interface Product {
     _id: string;
@@ -14,9 +15,14 @@ interface Product {
 
 const ProductPage = () => {
     const { id: productId } = useParams<{ id: string }>();
+    const navigate = useNavigate();
+
     const [product, setProduct] = useState<Product | null>(null);
+    const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const { addToCart } = useCart();
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -31,6 +37,13 @@ const ProductPage = () => {
         };
         fetchProduct();
     }, [productId]);
+
+    const addToCartHandler = () => {
+        if (product) {
+            addToCart(product, quantity);
+            navigate('/cart');
+        }
+    };
 
     if (loading) return <Spinner animation="border" />;
     if (error || !product) return <Alert variant="danger">{error || 'Product not found'}</Alert>;
@@ -68,8 +81,35 @@ const ProductPage = () => {
                                     <Col>{product.stock > 0 ? 'In Stock' : 'Out Of Stock'}</Col>
                                 </Row>
                             </ListGroup.Item>
+
+                            {product.stock > 0 && (
+                                <ListGroup.Item>
+                                    <Row>
+                                        <Col>Qty</Col>
+                                        <Col>
+                                            <Form.Control
+                                                as="select"
+                                                value={quantity}
+                                                onChange={(e) => setQuantity(Number(e.target.value))}
+                                            >
+                                                {[...Array(product.stock).keys()].map((x) => (
+                                                    <option key={x + 1} value={x + 1}>
+                                                        {x + 1}
+                                                    </option>
+                                                ))}
+                                            </Form.Control>
+                                        </Col>
+                                    </Row>
+                                </ListGroup.Item>
+                            )}
+
                             <ListGroup.Item>
-                                <Button className="w-100" type="button" disabled={product.stock === 0}>
+                                <Button
+                                    className="w-100"
+                                    type="button"
+                                    disabled={product.stock === 0}
+                                    onClick={addToCartHandler}
+                                >
                                     Add To Cart
                                 </Button>
                             </ListGroup.Item>
