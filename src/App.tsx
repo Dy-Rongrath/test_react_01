@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import Header from './components/Header';
 import HomePage from './pages/HomePage';
@@ -9,7 +9,7 @@ import RegisterPage from './pages/RegisterPage';
 
 const App = () => {
   return (
-    <>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Header />
       <main className="py-3">
         <Container>
@@ -21,7 +21,7 @@ const App = () => {
           </Routes>
         </Container>
       </main>
-    </>
+    </Router>
   );
 };
 

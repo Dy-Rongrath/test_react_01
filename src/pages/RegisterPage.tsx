@@ -54,7 +54,7 @@ const RegisterPage = () => {
             {message && <Alert variant="danger">{message}</Alert>}
             {error && <Alert variant="danger">{error}</Alert>}
             <Form onSubmit={submitHandler}>
-                <Form.Group controlId="name">
+                <Form.Group controlId="name" className="my-3">
                     <Form.Label>Name</Form.Label>
                     <Form.Control
                         type="text"
@@ -74,7 +74,7 @@ const RegisterPage = () => {
                     ></Form.Control>
                 </Form.Group>
 
-                <Form.Group controlId="password">
+                <Form.Group controlId="password" className="my-3">
                     <Form.Label>Password</Form.Label>
                     <Form.Control
                         type="password"
